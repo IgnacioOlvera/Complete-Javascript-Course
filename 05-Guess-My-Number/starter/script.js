@@ -1,48 +1,76 @@
 'use strict';
 
-// document.querySelector('.message').textContent = 'Correct Number!';
-
-// document.querySelector('.number').textContent = 13;
-// document.querySelector('.score').textContent = 10;
-
-// document.querySelector('.guess').value = 23;
-
 //Function to reduce Score
-const reduceScore = () => {
-  if (score <= 0) {
-    document.querySelector('.score').textContent = 'You lost the game ';
+const reduceScore = input => {
+  if (points < 1) {
+    setMessage(score, 'You lost the game ');
   } else {
-    score--;
-    document.querySelector('.score').textContent = score;
+    points--;
+    score.textContent = points;
   }
+  input < secretNumber
+    ? setMessage(message, 'Too Low')
+    : setMessage(message, 'Too High!');
 };
+
+//Function to Generate Random Number
+const generateSecretNumber = () => {
+  return Math.trunc(Math.random() * 20) + 1;
+};
+//Function to Set a message
+const setMessage = (element, message) => {
+  element.textContent = message;
+};
+//function to create click event
+const createClickEvent = (obj, func) => {
+  obj.addEventListener('click', func);
+};
+
 //Generate Secret Number
-const secretNumber = Math.trunc(Math.random() * 20) + 1;
+let secretNumber = generateSecretNumber();
 //Declare Score
-let score = 20;
+let points = 20;
+let highScore = 0;
 //Select elements
+const body = document.querySelector('body');
 const message = document.querySelector('.message');
 const check = document.querySelector('.check');
-check.addEventListener('click', () => {
+const number = document.querySelector('.number');
+const guess = document.querySelector('.guess');
+const score = document.querySelector('.score');
+const again = document.querySelector('.again');
+const highest = document.querySelector('.highscore');
+
+//Create click event for element check
+createClickEvent(check, () => {
   //Get input from user
-  const guess = Number(document.querySelector('.guess').value);
+  const input = Number(guess.value);
   //Conditionals
-  if (!guess && guess !== 0) {
+  if (!input) {
     //No info provided
-    message.textContent = 'No Number!';
-  } else if (guess === secretNumber) {
+    setMessage(message, 'No Number');
+  } else if (input === secretNumber) {
     //When player wins
-    message.textContent = 'Correct Number!';
-    document.querySelector('body').style.backgroundColor = '#60b347';
+    setMessage(message, 'Correct Number');
+    body.style.backgroundColor = '#60b347';
     number.style.width = '30rem';
-  } else if (guess > secretNumber) {
-    //When guess is too high
-    message.textContent = 'Correct Number!';
-    message.textContent = 'Too High';
-    reduceScore();
-  } else if (guess < secretNumber) {
-    //When guess is too low
-    message.textContent = 'Too Low';
-    reduceScore();
+    if (highScore < points) {
+      highScore = points;
+      highest.textContent = highScore;
+    }
+  } else {
+    reduceScore(input);
   }
+});
+
+//Create click element for element again
+createClickEvent(again, () => {
+  secretNumber = generateSecretNumber();
+  points = 20;
+  setMessage(message, 'Start Guessing');
+  setMessage(number, '?');
+  number.style.width = '15rem';
+  setMessage(score, points);
+  guess.value = '';
+  body.style.backgroundColor = '#222';
 });
